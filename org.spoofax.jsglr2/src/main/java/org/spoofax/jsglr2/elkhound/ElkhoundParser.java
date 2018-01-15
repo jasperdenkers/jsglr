@@ -35,6 +35,8 @@ public class ElkhoundParser<ParseForest extends AbstractParseForest, ParseNode e
     protected void parseLoop(Parse<ParseForest, ElkhoundStackNode> parse) throws ParseException {
         while(parse.hasNext() && !parse.activeStacks.isEmpty()) {
             if(parse.activeStacks.isSingle()) {
+                observing.notify(observer -> observer.parseCharacter(parse, parse.activeStacks));
+
                 ElkhoundStackNode singleActiveStack = parse.activeStacks.getSingle();
 
                 if(!singleActiveStack.allLinksRejected()) {
