@@ -51,9 +51,6 @@ public class ParseTableMeasurements extends Measurements {
                 case characterClassesUnique:
                     cells.add("" + characterClassFactory.characterClassesUnique.size());
                     break;
-                case characterClassesOptimizedUnique:
-                    cells.add("" + characterClassFactory.characterClassesOptimizedUnique.size());
-                    break;
                 case statesDisjointSortableCharacterClasses:
                     cells.add("" + stateFactory.statesDisjointSortableCharacterClassesCount);
                     break;
@@ -96,10 +93,9 @@ public class ParseTableMeasurements extends Measurements {
     }
 
     public enum ParseTableMeasurement {
-        states, characterClasses, characterClassesUnique, characterClassesOptimizedUnique,
-        statesDisjointSortableCharacterClasses, gotos, gotosPerStateMax, actionGroups, actionDisjointSortedRanges,
-        actions, actionGroupsPerStateMax, actionDisjointSortedRangesPerStateMax, actionsPerStateMax, actionsPerGroupMax,
-        actionsPerDisjointSortedRangeMax
+        states, characterClasses, characterClassesUnique, statesDisjointSortableCharacterClasses, gotos,
+        gotosPerStateMax, actionGroups, actionDisjointSortedRanges, actions, actionGroupsPerStateMax,
+        actionDisjointSortedRangesPerStateMax, actionsPerStateMax, actionsPerGroupMax, actionsPerDisjointSortedRangeMax
     }
 
     private static void csvHeader(PrintWriter out) {

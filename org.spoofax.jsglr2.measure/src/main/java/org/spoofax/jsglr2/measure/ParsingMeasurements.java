@@ -3,7 +3,6 @@ package org.spoofax.jsglr2.measure;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.spoofax.jsglr2.JSGLR2Variants;
@@ -37,16 +36,18 @@ public class ParsingMeasurements extends Measurements {
 
         IParseTable parseTable = new ParseTableReader().read(testSetReader.getParseTableTerm());
 
-        JSGLR2Variants.ParserVariant variantStandard = new JSGLR2Variants.ParserVariant(ActiveStacksRepresentation.ArrayList,
-            ForActorStacksRepresentation.ArrayDeque, ParseForestRepresentation.Hybrid, ParseForestConstruction.Full,
-            StackRepresentation.HybridElkhound, Reducing.Basic);
-        JSGLR2Variants.ParserVariant variantElkhound = new JSGLR2Variants.ParserVariant(ActiveStacksRepresentation.ArrayList,
-            ForActorStacksRepresentation.ArrayDeque, ParseForestRepresentation.Hybrid, ParseForestConstruction.Full,
-            StackRepresentation.HybridElkhound, Reducing.Elkhound);
+        JSGLR2Variants.ParserVariant variantStandard =
+            new JSGLR2Variants.ParserVariant(ActiveStacksRepresentation.ArrayList,
+                ForActorStacksRepresentation.ArrayDeque, ParseForestRepresentation.Hybrid, ParseForestConstruction.Full,
+                StackRepresentation.HybridElkhound, Reducing.Basic);
+        JSGLR2Variants.ParserVariant variantElkhound =
+            new JSGLR2Variants.ParserVariant(ActiveStacksRepresentation.ArrayList,
+                ForActorStacksRepresentation.ArrayDeque, ParseForestRepresentation.Hybrid, ParseForestConstruction.Full,
+                StackRepresentation.HybridElkhound, Reducing.Elkhound);
         JSGLR2Variants.ParserVariant variantOptimzedParseForest =
-            new JSGLR2Variants.ParserVariant(ActiveStacksRepresentation.ArrayList, ForActorStacksRepresentation.ArrayDeque,
-                ParseForestRepresentation.Hybrid, ParseForestConstruction.Optimized, StackRepresentation.HybridElkhound,
-                Reducing.Basic);
+            new JSGLR2Variants.ParserVariant(ActiveStacksRepresentation.ArrayList,
+                ForActorStacksRepresentation.ArrayDeque, ParseForestRepresentation.Hybrid,
+                ParseForestConstruction.Optimized, StackRepresentation.HybridElkhound, Reducing.Basic);
 
         measure(parseTable, variantStandard, "standard");
         measure(parseTable, variantElkhound, "elkhound");
@@ -72,7 +73,11 @@ public class ParsingMeasurements extends Measurements {
 
             parser.observing().attachObserver(measureObserver);
 
+            int inputs = 0;
+
             for(Input input : inputBatch.inputs) {
+                inputs++;
+
                 parser.parseUnsafe(input.content, input.filename, null);
             }
 
@@ -82,7 +87,8 @@ public class ParsingMeasurements extends Measurements {
             else
                 System.out.println("   - Characters: " + measureObserver.length + " (" + postfix + ")");
 
-            csvResults(out, inputBatch, measureActiveStacksFactory, measureForActorStacksFactory, measureObserver);
+            csvResults(out, inputBatch, measureActiveStacksFactory, measureForActorStacksFactory, measureObserver,
+                inputs);
         }
 
         out.close();
@@ -91,39 +97,16 @@ public class ParsingMeasurements extends Measurements {
     protected static void csvResults(PrintWriter out, TestSetReader.InputBatch inputBatch,
         MeasureActiveStacksFactory measureActiveStacksFactory,
         MeasureForActorStacksFactory measureForActorStacksFactory,
-        ParserMeasureObserver<HybridParseForest> measureObserver) {
+        ParserMeasureObserver<HybridParseForest> measureObserver, int inputs) {
         List<String> cells = new ArrayList<String>();
-
-        int parseNodesSingleDerivation = 0;
-
-        List<ParseNode> parseNodesContextFree = new ArrayList<ParseNode>();
-        List<ParseNode> parseNodesLexical = new ArrayList<ParseNode>();
-        List<ParseNode> parseNodesLayout = new ArrayList<ParseNode>();
-
-        for(ParseNode parseNode : measureObserver.parseNodes) {
-            int derivationCount = 0;
-
-            for(Derivation derivation : parseNode.getDerivations())
-                derivationCount++;
-
-            if(derivationCount == 1)
-                parseNodesSingleDerivation++;
-
-            if(parseNode.production.isContextFree())
-                parseNodesContextFree.add(parseNode);
-
-            if(!parseNode.production.isLayout()
-                && (parseNode.production.isLexical() || parseNode.production.isLexicalRhs()))
-                parseNodesLexical.add(parseNode);
-
-            if(parseNode.production.isLayout())
-                parseNodesLayout.add(parseNode);
-        }
 
         for(ParsingMeasurement measurement : ParsingMeasurement.values()) {
             switch(measurement) {
                 case size:
                     cells.add("" + inputBatch.size);
+                    break;
+                case files:
+                    cells.add("" + inputs);
                     break;
                 case characters:
                     cells.add("" + measureObserver.length);
@@ -174,52 +157,46 @@ public class ParsingMeasurements extends Measurements {
                     cells.add("" + measureForActorStacksFactory.measureForActorStacks.nonEmptyChecks);
                     break;
                 case stackNodes:
-                    cells.add("" + measureObserver.stackNodes.size());
-                    break;
-                case stackNodesSingleLink:
-                    cells.add("" + measureObserver.stackNodesSingleLink());
+                    cells.add("" + measureObserver.stackNodes);
                     break;
                 case stackLinks:
-                    cells.add("" + measureObserver.stackLinks.size());
+                    cells.add("" + measureObserver.stackLinks);
                     break;
                 case stackLinksRejected:
-                    cells.add("" + measureObserver.stackLinksRejected.size());
+                    cells.add("" + measureObserver.stackLinksRejected);
                     break;
                 case deterministicDepthResets:
                     cells.add("" + measureObserver.deterministicDepthResets);
                     break;
                 case parseNodes:
-                    cells.add("" + measureObserver.parseNodes.size());
-                    break;
-                case parseNodesSingleDerivation:
-                    cells.add("" + parseNodesSingleDerivation);
+                    cells.add("" + measureObserver.parseNodes);
                     break;
                 case parseNodesAmbiguous:
-                    cells.add("" + parseNodesAmbiguous(measureObserver.parseNodes));
+                    cells.add("" + measureObserver.parseNodesAmbiguous);
                     break;
                 case parseNodesContextFree:
-                    cells.add("" + parseNodesContextFree.size());
+                    cells.add("" + measureObserver.parseNodesContextFree);
                     break;
                 case parseNodesContextFreeAmbiguous:
-                    cells.add("" + parseNodesAmbiguous(parseNodesContextFree));
+                    cells.add("" + measureObserver.parseNodesContextFreeAmbiguous);
                     break;
                 case parseNodesLexical:
-                    cells.add("" + parseNodesLexical.size());
+                    cells.add("" + measureObserver.parseNodesLexical);
                     break;
                 case parseNodesLexicalAmbiguous:
-                    cells.add("" + parseNodesAmbiguous(parseNodesLexical));
+                    cells.add("" + measureObserver.parseNodesLexicalAmbiguous);
                     break;
                 case parseNodesLayout:
-                    cells.add("" + parseNodesLayout.size());
+                    cells.add("" + measureObserver.parseNodesLayout);
                     break;
                 case parseNodesLayoutAmbiguous:
-                    cells.add("" + parseNodesAmbiguous(parseNodesLayout));
+                    cells.add("" + measureObserver.parseNodesLayoutAmbiguous);
                     break;
                 case characterNodes:
-                    cells.add("" + measureObserver.characterNodes.size());
+                    cells.add("" + measureObserver.characterNodes);
                     break;
                 case actors:
-                    cells.add("" + measureObserver.actors.size());
+                    cells.add("" + measureObserver.actors);
                     break;
                 case doReductions:
                     cells.add("" + measureObserver.doReductions);
@@ -237,10 +214,10 @@ public class ParsingMeasurements extends Measurements {
                     cells.add("" + measureObserver.doReductionsNonDeterministicGLR);
                     break;
                 case reducers:
-                    cells.add("" + measureObserver.reducers.size());
+                    cells.add("" + measureObserver.reducers);
                     break;
                 case reducersElkhound:
-                    cells.add("" + measureObserver.reducersElkhound.size());
+                    cells.add("" + measureObserver.reducersElkhound);
                     break;
                 default:
                     break;
@@ -250,28 +227,15 @@ public class ParsingMeasurements extends Measurements {
         csvLine(out, cells);
     }
 
-    private static int parseNodesAmbiguous(Collection<ParseNode> parseNodes) {
-        int parseNodesAmbiguous = 0;
-
-        for(ParseNode parseNode : parseNodes) {
-            if(parseNode.isAmbiguous())
-                parseNodesAmbiguous++;
-        }
-
-        return parseNodesAmbiguous;
-    }
-
-
-
     public enum ParsingMeasurement {
-        size, characters, activeStacksAdds, activeStacksMaxSize, activeStacksIsSingleChecks, activeStacksIsEmptyChecks,
-        activeStacksFindsWithState, activeStacksForLimitedReductions, activeStacksAddAllTo, activeStacksClears,
-        activeStacksIterators, forActorAdds, forActorDelayedAdds, forActorMaxSize, forActorDelayedMaxSize,
-        forActorContainsChecks, forActorNonEmptyChecks, stackNodes, stackNodesSingleLink, stackLinks,
-        stackLinksRejected, deterministicDepthResets, parseNodes, parseNodesSingleDerivation, parseNodesAmbiguous,
-        parseNodesContextFree, parseNodesContextFreeAmbiguous, parseNodesLexical, parseNodesLexicalAmbiguous,
-        parseNodesLayout, parseNodesLayoutAmbiguous, characterNodes, actors, doReductions, doLimitedReductions,
-        doReductionsLR, doReductionsDeterministicGLR, doReductionsNonDeterministicGLR, reducers, reducersElkhound
+        size, files, characters, activeStacksAdds, activeStacksMaxSize, activeStacksIsSingleChecks,
+        activeStacksIsEmptyChecks, activeStacksFindsWithState, activeStacksForLimitedReductions, activeStacksAddAllTo,
+        activeStacksClears, activeStacksIterators, forActorAdds, forActorDelayedAdds, forActorMaxSize,
+        forActorDelayedMaxSize, forActorContainsChecks, forActorNonEmptyChecks, stackNodes, stackLinks,
+        stackLinksRejected, deterministicDepthResets, parseNodes, parseNodesAmbiguous, parseNodesContextFree,
+        parseNodesContextFreeAmbiguous, parseNodesLexical, parseNodesLexicalAmbiguous, parseNodesLayout,
+        parseNodesLayoutAmbiguous, characterNodes, actors, doReductions, doLimitedReductions, doReductionsLR,
+        doReductionsDeterministicGLR, doReductionsNonDeterministicGLR, reducers, reducersElkhound
     }
 
     private static void csvHeader(PrintWriter out) {
