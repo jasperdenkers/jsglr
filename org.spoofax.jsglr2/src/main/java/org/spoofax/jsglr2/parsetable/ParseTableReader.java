@@ -24,6 +24,7 @@ import org.spoofax.jsglr2.actions.IAction;
 import org.spoofax.jsglr2.actions.IActionsFactory;
 import org.spoofax.jsglr2.actions.IGoto;
 import org.spoofax.jsglr2.actions.IReduce;
+import org.spoofax.jsglr2.characterclasses.CharacterClass;
 import org.spoofax.jsglr2.characterclasses.ICharacterClass;
 import org.spoofax.jsglr2.characterclasses.ICharacterClassFactory;
 import org.spoofax.jsglr2.states.ActionsForCharacterRepresentation;
@@ -42,14 +43,14 @@ public class ParseTableReader {
     final IStateFactory stateFactory;
 
     public ParseTableReader() {
-        this.characterClassFactory = ICharacterClass.factory();
+        this.characterClassFactory = CharacterClass.factory();
         this.actionsFactory = IAction.factory();
         this.stateFactory = IState.factory();
     }
 
     public ParseTableReader(ActionsForCharacterRepresentation actionsForCharacterRepresentation,
         ProductionToGotoRepresentation productionToGotoRepresentation) {
-        this.characterClassFactory = ICharacterClass.factory();
+        this.characterClassFactory = CharacterClass.factory();
         this.actionsFactory = IAction.factory();
         this.stateFactory = IState.factory(actionsForCharacterRepresentation, productionToGotoRepresentation);
     }
@@ -61,7 +62,7 @@ public class ParseTableReader {
     }
 
     public ParseTableReader(IStateFactory stateFactory) {
-        this.characterClassFactory = ICharacterClass.factory();
+        this.characterClassFactory = CharacterClass.factory();
         this.actionsFactory = IAction.factory();
         this.stateFactory = stateFactory;
     }

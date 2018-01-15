@@ -31,13 +31,13 @@ public final class CharacterClassRangeSet implements ICharacterClass {
 
     private CharacterClassRangeSet(final ImmutableRangeSet<Integer> rangeSet, boolean containsEOF) {
         assert rangeSet.isEmpty() || rangeSet.span().lowerEndpoint() >= 0;
-        assert rangeSet.isEmpty() || rangeSet.span().upperEndpoint() < EOF_INT;
+        assert rangeSet.isEmpty() || rangeSet.span().upperEndpoint() < CharacterClass.EOF_INT;
 
         if(rangeSet.isEmpty()) {
-            this.min = this.max = containsEOF ? ICharacterClass.EOF_INT : -1;
+            this.min = this.max = containsEOF ? CharacterClass.EOF_INT : -1;
         } else {
             this.min = rangeSet.span().lowerEndpoint();
-            this.max = Math.max(rangeSet.span().upperEndpoint(), containsEOF ? ICharacterClass.EOF_INT : -1);
+            this.max = Math.max(rangeSet.span().upperEndpoint(), containsEOF ? CharacterClass.EOF_INT : -1);
         }
 
         this.rangeSet = rangeSet;
@@ -63,7 +63,7 @@ public final class CharacterClassRangeSet implements ICharacterClass {
 
     @Override
     public final boolean contains(int character) {
-        if(character == ICharacterClass.EOF_INT)
+        if(character == CharacterClass.EOF_INT)
             return containsEOF;
 
         if(useCachedBitSet) {
@@ -91,17 +91,17 @@ public final class CharacterClassRangeSet implements ICharacterClass {
         mutableRangeSet.add(Range.closed(from, Math.min(255, to)));
 
         return new CharacterClassRangeSet(ImmutableRangeSet.copyOf(mutableRangeSet),
-            containsEOF || to == ICharacterClass.EOF_INT);
+            containsEOF || to == CharacterClass.EOF_INT);
     }
 
     protected final CharacterClassRangeSet addSingle(int character) {
         final RangeSet<Integer> mutableRangeSet = TreeRangeSet.create(rangeSet);
 
-        if(character < ICharacterClass.EOF_INT)
+        if(character < CharacterClass.EOF_INT)
             mutableRangeSet.add(Range.singleton(character));
 
         return new CharacterClassRangeSet(ImmutableRangeSet.copyOf(mutableRangeSet),
-            containsEOF || character == ICharacterClass.EOF_INT);
+            containsEOF || character == CharacterClass.EOF_INT);
     }
 
     private boolean tryOptimize() {
@@ -156,7 +156,7 @@ public final class CharacterClassRangeSet implements ICharacterClass {
 
     public final ICharacterClass optimized() {
         if(rangeSet.isEmpty())
-            return containsEOF ? EOF_SINGLETON : new CharacterClassOptimized();
+            return containsEOF ? CharacterClass.EOF_SINGLETON : new CharacterClassOptimized();
         else
             return new CharacterClassOptimized(word0, word1, word2, word3, containsEOF, min, max);
     }
@@ -189,9 +189,9 @@ public final class CharacterClassRangeSet implements ICharacterClass {
             final int to = range.upperEndpoint();
 
             if(from != to)
-                ranges.add("" + ICharacterClass.intToString(from) + "-" + ICharacterClass.intToString(to));
+                ranges.add("" + CharacterClass.intToString(from) + "-" + CharacterClass.intToString(to));
             else
-                ranges.add("" + ICharacterClass.intToString(from));
+                ranges.add("" + CharacterClass.intToString(from));
         });
 
         if(containsEOF)

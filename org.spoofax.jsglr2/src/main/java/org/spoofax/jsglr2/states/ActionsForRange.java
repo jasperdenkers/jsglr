@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import org.spoofax.jsglr2.actions.IAction;
 import org.spoofax.jsglr2.actions.IReduce;
-import org.spoofax.jsglr2.characterclasses.ICharacterClass;
+import org.spoofax.jsglr2.characterclasses.CharacterClass;
 import org.spoofax.jsglr2.parser.IParseInput;
 
 public class ActionsForRange {
@@ -59,7 +59,7 @@ public class ActionsForRange {
 
     @Override
     public String toString() {
-        return "{" + ICharacterClass.intToString(from) + "," + ICharacterClass.intToString(to) + "}->"
+        return "{" + CharacterClass.intToString(from) + "," + CharacterClass.intToString(to) + "}->"
             + Arrays.toString(actions);
     }
 

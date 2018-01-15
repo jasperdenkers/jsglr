@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 
 import org.spoofax.jsglr2.actions.IAction;
 import org.spoofax.jsglr2.actions.IReduce;
-import org.spoofax.jsglr2.characterclasses.ICharacterClass;
+import org.spoofax.jsglr2.characterclasses.CharacterClass;
 import org.spoofax.jsglr2.elkhound.AbstractElkhoundStackNode;
 import org.spoofax.jsglr2.parseforest.AbstractParseForest;
 import org.spoofax.jsglr2.parser.ForShifterElement;
@@ -34,7 +34,7 @@ public class ParserVisualisationObserver<ParseForest extends AbstractParseForest
 
     @Override
     public void parseCharacter(Parse<ParseForest, StackNode> parse, Iterable<StackNode> activeStacks) {
-        trace("{\"action\":\"parseCharacter\",\"character\":\"" + ICharacterClass.intToString(parse.currentChar)
+        trace("{\"action\":\"parseCharacter\",\"character\":\"" + CharacterClass.intToString(parse.currentChar)
             + "\",\"activeStacks\":" + stackQueueToString(activeStacks) + "}");
     }
 
@@ -74,7 +74,7 @@ public class ParserVisualisationObserver<ParseForest extends AbstractParseForest
 
     @Override
     public void forActorStacks(IForActorStacks<StackNode> forActorStacks) {
-        trace("{\"action\":\"forActorStacks\",\"forActor\":" + forActorStacks + "}");
+        trace("{\"action\":\"forActorStacks\",\"forActor\":null}");
     }
 
     @Override
@@ -146,7 +146,7 @@ public class ParserVisualisationObserver<ParseForest extends AbstractParseForest
     @Override
     public void createCharacterNode(ParseForest parseNode, int character) {
         trace("{\"action\":\"createCharacterNode\",\"nodeNumber\":" + parseNode.nodeNumber + ",\"character\":\""
-            + ICharacterClass.intToString(character) + "\"" + ",\"startPosition\":" + parseNode.startPosition.offset
+            + CharacterClass.intToString(character) + "\"" + ",\"startPosition\":" + parseNode.startPosition.offset
             + ",\"endPosition\":" + parseNode.endPosition.offset + "}");
     }
 

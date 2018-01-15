@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.spoofax.jsglr2.actions.ActionsPerCharacterClass;
 import org.spoofax.jsglr2.actions.IAction;
 import org.spoofax.jsglr2.actions.IActionsFactory;
+import org.spoofax.jsglr2.characterclasses.CharacterClass;
 import org.spoofax.jsglr2.characterclasses.ICharacterClass;
 import org.spoofax.jsglr2.characterclasses.ICharacterClassFactory;
 import org.spoofax.jsglr2.parser.IParseInput;
@@ -18,7 +19,7 @@ import org.spoofax.jsglr2.states.IActionsForCharacter;
 
 public class MultipleActionGroupsForRangeTest {
 
-    ICharacterClassFactory characterClassFactory = ICharacterClass.factory();
+    ICharacterClassFactory characterClassFactory = CharacterClass.factory();
 
     ICharacterClass AZ = characterClassFactory.fromRange(65, 90);
     ICharacterClass az = characterClassFactory.fromRange(97, 122);
@@ -73,7 +74,7 @@ public class MultipleActionGroupsForRangeTest {
         IActionsForCharacter separated = new ActionsForCharacterSeparated(actionsPerCharacterClasses);
         IActionsForCharacter disjointSorted = new ActionsForCharacterDisjointSorted(actionsPerCharacterClasses);
 
-        for(int character = 0; character <= ICharacterClass.EOF_INT; character++) {
+        for(int character = 0; character <= CharacterClass.EOF_INT; character++) {
             IParseInput parseInput = new MockParseInput(character);
 
             Set<IAction> actionForSeparated = iterableToSet(separated.getApplicableActions(parseInput));

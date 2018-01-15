@@ -48,7 +48,7 @@ public final class CharacterClassSingle implements ICharacterClass {
 
     @Override
     public final String toString() {
-        return "{" + ICharacterClass.intToString(character) + "}";
+        return "{" + CharacterClass.intToString(character) + "}";
     }
 
 }

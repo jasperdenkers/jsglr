@@ -3,7 +3,7 @@ package org.spoofax.jsglr2.parser;
 import org.spoofax.jsglr2.actions.IAction;
 import org.spoofax.jsglr2.actions.IReduce;
 import org.spoofax.jsglr2.actions.IShift;
-import org.spoofax.jsglr2.characterclasses.ICharacterClass;
+import org.spoofax.jsglr2.characterclasses.CharacterClass;
 import org.spoofax.jsglr2.parseforest.AbstractParseForest;
 import org.spoofax.jsglr2.parseforest.ParseForestManager;
 import org.spoofax.jsglr2.parser.observing.ParserObserving;
@@ -77,7 +77,7 @@ public class Parser<ParseForest extends AbstractParseForest, ParseNode extends P
             } else {
                 ParseFailure<ParseForest, ?> failure = new ParseFailure<>(parse,
                     new ParseException("unknown parse fail (file: " + parse.filename + ", char: " + parse.currentChar
-                        + "/'" + ICharacterClass.intToString(parse.currentChar) + "', position: "
+                        + "/'" + CharacterClass.intToString(parse.currentChar) + "', position: "
                         + parse.currentPosition().coordinatesToString() + " [" + parse.currentPosition().offset + "/"
                         + parse.inputLength + "])"));
 
