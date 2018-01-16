@@ -27,6 +27,17 @@ public final class CharacterClassSingle implements ICharacterClass {
         return rangeSet.addSingle(character);
     }
 
+    public final CharacterClassRangeSet rangeSetIntersection(CharacterClassRangeSet rangeSet) {
+        if(rangeSet.contains(character))
+            return CharacterClassRangeSet.EMPTY_CONSTANT.addSingle(character);
+        else
+            return CharacterClassRangeSet.EMPTY_CONSTANT;
+    }
+
+    public final CharacterClassRangeSet rangeSetDifference(CharacterClassRangeSet rangeSet) {
+        return rangeSet.removeSingle(character);
+    }
+
     @Override
     public int hashCode() {
         return Integer.hashCode(character);

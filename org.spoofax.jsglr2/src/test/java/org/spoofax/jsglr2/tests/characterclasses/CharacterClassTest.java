@@ -29,6 +29,16 @@ public class CharacterClassTest {
         }
     }
 
+    private void testCharacterClass(ICharacterClass one, ICharacterClass two) {
+        for(int i = 0; i <= CharacterClass.EOF_INT; i++) {
+            boolean expected = one.contains(i);
+            boolean actual = two.contains(i);
+
+            assertEquals("Character " + i + " ('" + CharacterClass.intToString(i) + "') for characters "
+                + one.toString() + " vs. " + two.toString() + ":", actual, expected);
+        }
+    }
+
     @Test
     public void testLowerCaseLettersRange() {
         testCharacterClass(az, character -> {
@@ -53,6 +63,20 @@ public class CharacterClassTest {
         testCharacterClass(letters, character -> {
             return 65 <= character && character <= 90 || 97 <= character && character <= 122;
         });
+    }
+
+    @Test
+    public void testLettersIntersectionRange() {
+        ICharacterClass letters = factory.intersection(az, AZ);
+
+        testCharacterClass(letters, factory.fromEmpty());
+    }
+
+    @Test
+    public void testLettersDifferenceRange() {
+        ICharacterClass letters = factory.intersection(az, AZ);
+
+        testCharacterClass(letters, factory.fromEmpty());
     }
 
     @Test
@@ -91,6 +115,46 @@ public class CharacterClassTest {
         testCharacterClass(characters, character -> {
             return 97 <= character && character <= 122 || character == CharacterClass.EOF_INT;
         });
+    }
+
+    @Test
+    public void testRangeEOFintersect() {
+        testCharacterClass(factory.intersection(factory.union(az, eof), eof), eof);
+        testCharacterClass(factory.intersection(eof, factory.union(az, eof)), eof);
+    }
+
+    @Test
+    public void testRangeEOFdifference() {
+        testCharacterClass(factory.difference(factory.union(az, eof), eof), az);
+        testCharacterClass(factory.difference(eof, factory.union(az, eof)), factory.fromEmpty());
+    }
+
+    @Test
+    public void testRangeIntersect() {
+        testCharacterClass(factory.intersection(factory.fromRange(10, 20), factory.fromSingle(15)),
+            factory.fromSingle(15));
+        testCharacterClass(factory.intersection(factory.fromSingle(15), factory.fromRange(10, 20)),
+            factory.fromSingle(15));
+
+        testCharacterClass(factory.intersection(factory.fromRange(10, 20), factory.fromRange(15, 25)),
+            factory.fromRange(15, 20));
+
+        testCharacterClass(factory.intersection(factory.fromRange(10, 20), factory.fromRange(20, 30)),
+            factory.fromSingle(20));
+        testCharacterClass(factory.intersection(factory.fromRange(10, 20), factory.fromSingle(20)),
+            factory.fromSingle(20));
+        testCharacterClass(factory.intersection(factory.fromSingle(20), factory.fromRange(10, 20)),
+            factory.fromSingle(20));
+    }
+
+    @Test
+    public void testRangeDifference() {
+        testCharacterClass(factory.difference(factory.fromRange(65, 75), factory.fromSingle(70)),
+            factory.union(factory.fromRange(65, 69), factory.fromRange(71, 75)));
+        testCharacterClass(factory.difference(factory.fromSingle(15), factory.fromRange(10, 20)), factory.fromEmpty());
+
+        testCharacterClass(factory.difference(factory.fromRange(65, 70), factory.fromSingle(70)),
+            factory.fromRange(65, 69));
     }
 
     @Test

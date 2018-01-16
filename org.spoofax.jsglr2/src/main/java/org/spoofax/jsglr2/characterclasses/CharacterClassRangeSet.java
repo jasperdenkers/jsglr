@@ -104,6 +104,16 @@ public final class CharacterClassRangeSet implements ICharacterClass {
             containsEOF || character == CharacterClass.EOF_INT);
     }
 
+    protected final CharacterClassRangeSet removeSingle(int character) {
+        final RangeSet<Integer> mutableRangeSet = TreeRangeSet.create(rangeSet);
+
+        if(character < CharacterClass.EOF_INT)
+            mutableRangeSet.remove(Range.open(character - 1, character + 1));
+
+        return new CharacterClassRangeSet(ImmutableRangeSet.copyOf(mutableRangeSet),
+            containsEOF && character != CharacterClass.EOF_INT);
+    }
+
     private boolean tryOptimize() {
         if(!rangeSet.isEmpty()) {
             final BitSet bitSet = convertToBitSet(rangeSet);
@@ -139,17 +149,36 @@ public final class CharacterClassRangeSet implements ICharacterClass {
         return bitSet;
     }
 
-    public CharacterClassRangeSet rangeSetUnion(CharacterClassRangeSet other) {
-        return union(other);
-    }
-
-    protected final CharacterClassRangeSet union(CharacterClassRangeSet other) {
+    public final CharacterClassRangeSet rangeSetUnion(CharacterClassRangeSet other) {
         final RangeSet<Integer> mutableRangeSet = TreeRangeSet.create();
 
         mutableRangeSet.addAll(this.rangeSet);
         mutableRangeSet.addAll(other.rangeSet);
 
         boolean containsEOF = this.containsEOF || other.containsEOF;
+
+        return new CharacterClassRangeSet(ImmutableRangeSet.copyOf(mutableRangeSet), containsEOF);
+    }
+
+    public CharacterClassRangeSet rangeSetIntersection(CharacterClassRangeSet other) {
+        final RangeSet<Integer> mutableRangeSet = TreeRangeSet.create();
+
+        for(Range<Integer> range : this.rangeSet.asRanges()) {
+            mutableRangeSet.addAll(other.rangeSet.subRangeSet(range));
+        }
+
+        boolean containsEOF = this.containsEOF && other.containsEOF;
+
+        return new CharacterClassRangeSet(ImmutableRangeSet.copyOf(mutableRangeSet), containsEOF);
+    }
+
+    public CharacterClassRangeSet rangeSetDifference(CharacterClassRangeSet other) {
+        final RangeSet<Integer> mutableRangeSet = TreeRangeSet.create();
+
+        mutableRangeSet.addAll(other.rangeSet);
+        mutableRangeSet.removeAll(this.rangeSet);
+
+        boolean containsEOF = other.containsEOF && !this.containsEOF;
 
         return new CharacterClassRangeSet(ImmutableRangeSet.copyOf(mutableRangeSet), containsEOF);
     }

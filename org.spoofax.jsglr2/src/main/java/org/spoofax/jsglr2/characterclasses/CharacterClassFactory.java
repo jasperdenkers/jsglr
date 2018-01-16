@@ -60,11 +60,72 @@ public class CharacterClassFactory implements ICharacterClassFactory {
         }
     }
 
+    @Override
+    public final ICharacterClass intersection(ICharacterClass a, ICharacterClass b) {
+        boolean aIsRangeSet = a instanceof CharacterClassRangeSet;
+        boolean bIsRangeSet = b instanceof CharacterClassRangeSet;
+
+        if(aIsRangeSet || bIsRangeSet) {
+            CharacterClassRangeSet rangeSet;
+            ICharacterClass other;
+
+            if(aIsRangeSet) {
+                rangeSet = (CharacterClassRangeSet) a;
+                other = b;
+            } else {
+                rangeSet = (CharacterClassRangeSet) b;
+                other = a;
+            }
+
+            return rangeSetIntersection(rangeSet, other);
+        } else {
+            CharacterClassRangeSet result = fromEmpty();
+
+            result = rangeSetUnion(result, a);
+            result = rangeSetIntersection(result, b);
+
+            return result;
+        }
+    }
+
+    @Override
+    public final ICharacterClass difference(ICharacterClass a, ICharacterClass b) {
+        CharacterClassRangeSet aRangeSet;
+
+        if(a instanceof CharacterClassRangeSet)
+            aRangeSet = (CharacterClassRangeSet) a;
+        else {
+            aRangeSet = fromEmpty();
+
+            aRangeSet = rangeSetUnion(aRangeSet, a);
+        }
+
+        return rangeSetDifference(aRangeSet, b);
+    }
+
     private final CharacterClassRangeSet rangeSetUnion(CharacterClassRangeSet rangeSet, ICharacterClass other) {
         if(other instanceof CharacterClassRangeSet)
             return ((CharacterClassRangeSet) other).rangeSetUnion(rangeSet);
         else if(other instanceof CharacterClassSingle)
             return ((CharacterClassSingle) other).rangeSetUnion(rangeSet);
+        else
+            throw new IllegalStateException();
+    }
+
+    private final CharacterClassRangeSet rangeSetIntersection(CharacterClassRangeSet rangeSet, ICharacterClass other) {
+        if(other instanceof CharacterClassRangeSet)
+            return ((CharacterClassRangeSet) other).rangeSetIntersection(rangeSet);
+        else if(other instanceof CharacterClassSingle)
+            return ((CharacterClassSingle) other).rangeSetIntersection(rangeSet);
+        else
+            throw new IllegalStateException();
+    }
+
+    private final CharacterClassRangeSet rangeSetDifference(CharacterClassRangeSet rangeSet, ICharacterClass other) {
+        if(other instanceof CharacterClassRangeSet)
+            return ((CharacterClassRangeSet) other).rangeSetDifference(rangeSet);
+        else if(other instanceof CharacterClassSingle)
+            return ((CharacterClassSingle) other).rangeSetDifference(rangeSet);
         else
             throw new IllegalStateException();
     }
