@@ -33,12 +33,9 @@ public class TestSet {
 
     private static final String JAVA_8_BENCHMARK_INPUT_PATH_STRING =
         System.getProperty(String.format("%s.%s", TestSet.class.getCanonicalName(), "javaInputPath"),
-            "/Users/Jasper/git/spoofax-releng/mb-rep/org.spoofax.terms");
+            "/Users/Jasper/Desktop/jsglr2benchmarks/java");
 
     public static TestSet java8 = new TestSet("java", new TestSetParseTableFromATerm("Java8"),
-        new TestSetMultipleInputs(JAVA_8_BENCHMARK_INPUT_PATH_STRING, "java"));
-
-    public static TestSet java8unrolled = new TestSet("javaUnrolled", new TestSetParseTableFromATerm("Java8_unrolled"),
         new TestSetMultipleInputs(JAVA_8_BENCHMARK_INPUT_PATH_STRING, "java"));
 
     public static TestSet greenMarl = new TestSet("greenmarl", new TestSetParseTableFromATerm("GreenMarl"),
@@ -51,7 +48,6 @@ public class TestSet {
     public static TestSet webDSL = new TestSet("webdsl", new TestSetParseTableFromATerm("WebDSL"),
         new TestSetMultipleInputs(WEBDSL_BENCHMARK_INPUT_PATH_STRING, "app"));
 
-    public static List<TestSet> all =
-        Arrays.asList(lexical, sumAmbiguous, sumNonAmbiguous, java8, java8unrolled, greenMarl, webDSL);
+    public static List<TestSet> all = Arrays.asList(lexical, sumAmbiguous, sumNonAmbiguous, java8, greenMarl, webDSL);
 
 }

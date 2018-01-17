@@ -1,5 +1,7 @@
 # JSGLR2
 
+This project requires a Spoofax Build: http://www.metaborg.org/en/latest/source/dev/build.html.
+
 Build project and run tests:
 
 ```
