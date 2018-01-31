@@ -3,10 +3,10 @@ package org.spoofax.jsglr2.states;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.spoofax.jsglr2.actions.IAction;
-import org.spoofax.jsglr2.actions.IReduce;
-import org.spoofax.jsglr2.characterclasses.CharacterClass;
-import org.spoofax.jsglr2.parser.IParseInput;
+import org.metaborg.characterclasses.CharacterClassFactory;
+import org.metaborg.parsetable.IParseInput;
+import org.metaborg.parsetable.actions.IAction;
+import org.metaborg.parsetable.actions.IReduce;
 
 public class ActionsForRange {
 
@@ -59,7 +59,7 @@ public class ActionsForRange {
 
     @Override
     public String toString() {
-        return "{" + CharacterClass.intToString(from) + "," + CharacterClass.intToString(to) + "}->"
+        return "{" + CharacterClassFactory.intToString(from) + "," + CharacterClassFactory.intToString(to) + "}->"
             + Arrays.toString(actions);
     }
 

@@ -6,11 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.spoofax.jsglr2.actions.ActionsPerCharacterClass;
-import org.spoofax.jsglr2.actions.IAction;
-import org.spoofax.jsglr2.actions.IReduce;
-import org.spoofax.jsglr2.characterclasses.CharacterClass;
-import org.spoofax.jsglr2.parser.IParseInput;
+import org.metaborg.characterclasses.CharacterClassFactory;
+import org.metaborg.parsetable.IParseInput;
+import org.metaborg.parsetable.actions.IAction;
+import org.metaborg.parsetable.actions.IReduce;
+import org.metaborg.sdf2table.parsetable.query.ActionsPerCharacterClass;
+import org.metaborg.sdf2table.parsetable.query.IActionsForCharacter;
 
 public final class ActionsForCharacterDisjointSorted implements IActionsForCharacter {
 
@@ -26,7 +27,7 @@ public final class ActionsForCharacterDisjointSorted implements IActionsForChara
         int newRangeFromCharacter = -1; // Contains the start character for the next range that will be added
         Set<IAction> newRangeActions = null; // Contains the actions for the next range that will be added
 
-        for(int character = 0; character <= CharacterClass.EOF_INT; character++) {
+        for(int character = 0; character <= CharacterClassFactory.EOF_INT; character++) {
             Set<IAction> actionsForCharacter = null;
 
             for(ActionsPerCharacterClass actionsPerCharacterClass : actionsPerCharacterClasses) {
@@ -68,7 +69,7 @@ public final class ActionsForCharacterDisjointSorted implements IActionsForChara
                     newRangeActions = actionsForCharacter;
                 }
 
-                if(character == CharacterClass.EOF_INT && newRangeFromCharacter != -1) {
+                if(character == CharacterClassFactory.EOF_INT && newRangeFromCharacter != -1) {
                     actionsForRanges
                         .add(new ActionsForRange(newRangeActions.toArray(new IAction[newRangeActions.size()]),
                             newRangeFromCharacter, character));
