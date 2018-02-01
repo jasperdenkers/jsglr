@@ -1,0 +1,25 @@
+definition
+
+module match
+
+exports
+  lexical syntax
+    [0-9]+                -> INT    
+    [a-zA-Z] [a-zA-Z0-9]* -> ID     
+    [\ \t\n\r]            -> LAYOUT 
+
+  lexical restrictions
+    INT -/- [0-9]
+    ID -/- [a-zA-Z0-9\_]
+
+  context-free restrictions
+    LAYOUT? -/- [\ \t\n\r]
+
+  context-free start-symbols
+    Start
+
+  context-free syntax
+    Exp                        -> Start  
+    INT                        -> Exp    {cons("Int")}
+    "match" Exp "with" Clause+ -> Exp    {cons("Match")}
+    ID "->" Exp                -> Clause {cons("Clause")}
