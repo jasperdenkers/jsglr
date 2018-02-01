@@ -70,17 +70,16 @@ public class Parse<ParseForest extends AbstractParseForest, StackNode extends Ab
         return currentOffset <= inputLength;
     }
 
-    public void next() throws ParseException {
+    public void next() {
         currentOffset++;
         currentChar = getChar(currentOffset);
 
         if(currentOffset < inputLength) {
             if(CharacterClassFactory.isNewLine(currentChar)) {
                 currentLine++;
-                currentColumn = 1;
-            } else {
+                currentColumn = 0;
+            } else
                 currentColumn++;
-            }
         }
     }
 
