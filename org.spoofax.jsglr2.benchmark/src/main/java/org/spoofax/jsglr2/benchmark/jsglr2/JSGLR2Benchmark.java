@@ -5,6 +5,10 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.metaborg.characterclasses.CharacterClassFactory;
+import org.metaborg.parsetable.IParseTable;
+import org.metaborg.sdf2table.parsetable.query.ActionsForCharacterRepresentation;
+import org.metaborg.sdf2table.parsetable.query.ProductionToGotoRepresentation;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.infra.Blackhole;
@@ -14,20 +18,19 @@ import org.spoofax.jsglr2.JSGLR2Variants;
 import org.spoofax.jsglr2.JSGLR2Variants.ParseTableVariant;
 import org.spoofax.jsglr2.JSGLR2Variants.ParserVariant;
 import org.spoofax.jsglr2.JSGLR2Variants.Variant;
+import org.spoofax.jsglr2.actions.ActionsFactory;
 import org.spoofax.jsglr2.benchmark.BaseBenchmark;
 import org.spoofax.jsglr2.parseforest.ParseForestConstruction;
 import org.spoofax.jsglr2.parseforest.ParseForestRepresentation;
 import org.spoofax.jsglr2.parser.IParser;
 import org.spoofax.jsglr2.parser.ParseException;
-import org.spoofax.jsglr2.parsetable.IParseTable;
 import org.spoofax.jsglr2.parsetable.ParseTableReadException;
 import org.spoofax.jsglr2.parsetable.ParseTableReader;
 import org.spoofax.jsglr2.reducing.Reducing;
 import org.spoofax.jsglr2.stack.StackRepresentation;
 import org.spoofax.jsglr2.stack.collections.ActiveStacksRepresentation;
 import org.spoofax.jsglr2.stack.collections.ForActorStacksRepresentation;
-import org.spoofax.jsglr2.states.ActionsForCharacterRepresentation;
-import org.spoofax.jsglr2.states.ProductionToGotoRepresentation;
+import org.spoofax.jsglr2.states.StateFactory;
 import org.spoofax.jsglr2.testset.Input;
 import org.spoofax.jsglr2.testset.TestSet;
 import org.spoofax.terms.ParseError;
@@ -52,8 +55,9 @@ public abstract class JSGLR2Benchmark extends BaseBenchmark {
 
         filterVariants(implode(), variant);
 
-        IParseTable parseTable = new ParseTableReader(variant.parseTable.actionsForCharacterRepresentation,
-            variant.parseTable.productionToGotoRepresentation).read(testSetReader.getParseTableTerm());
+        IParseTable parseTable = new ParseTableReader(new CharacterClassFactory(true, true), new ActionsFactory(true),
+            new StateFactory(variant.parseTable.actionsForCharacterRepresentation,
+                variant.parseTable.productionToGotoRepresentation)).read(testSetReader.getParseTableTerm());
 
         parser = JSGLR2Variants.getParser(parseTable, variant.parser);
         jsglr2 = JSGLR2Variants.getJSGLR2(parseTable, variant.parser);
