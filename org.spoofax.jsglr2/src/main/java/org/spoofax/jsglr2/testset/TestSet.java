@@ -38,8 +38,12 @@ public class TestSet {
     public static TestSet java8 = new TestSet("java", new TestSetParseTableFromATerm("Java8"),
         new TestSetMultipleInputs(JAVA_8_BENCHMARK_INPUT_PATH_STRING, "java"));
 
+    private static final String GREENMARL_BENCHMARK_INPUT_PATH_STRING =
+        System.getProperty(String.format("%s.%s", TestSet.class.getCanonicalName(), "webDSLInputPath"),
+            "/Users/Jasper/Desktop/jsglr2benchmarks/greenmarl");
+
     public static TestSet greenMarl = new TestSet("greenmarl", new TestSetParseTableFromATerm("GreenMarl"),
-        new TestSetSingleInput("GreenMarl/infomap.gm"));
+        new TestSetMultipleInputs(GREENMARL_BENCHMARK_INPUT_PATH_STRING, "gm"));
 
     private static final String WEBDSL_BENCHMARK_INPUT_PATH_STRING =
         System.getProperty(String.format("%s.%s", TestSet.class.getCanonicalName(), "webDSLInputPath"),
